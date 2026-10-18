@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5 text-center">
+        <div class="card p-5 shadow border-0" style="border-radius: 16px;">
+            <div class="fs-1 text-success mb-3">✔</div>
+            <h3 class="fw-bold text-dark">Төлем сәтті өтті!</h3>
+            <p class="text-muted">#{{ policy.id }} нөмірлі полис үшін төлем қабылданды. Жеке кабинетке қайтып, ресми PDF сертификатты жүктей аласыз.</p>
+            <a href="/dashboard" class="btn btn-primary mt-3 fw-bold">Жеке кабинетке оралу</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

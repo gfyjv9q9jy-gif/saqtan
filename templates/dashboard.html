@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-3">
+    <!-- Премиум Баннер (Тау және авто көрінісі фонымен) -->
+    <div class="p-5 mb-4 rounded-4 shadow-lg text-white position-relative overflow-hidden" style="background: linear-gradient(rgba(0, 30, 20, 0.8), rgba(0, 50, 40, 0.9)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80') center/cover;">
+        <div class="position-relative z-1">
+            <span class="badge bg-warning text-dark mb-2 px-3 py-2 fw-bold">СЕНІМДІ ҚОРҒАНЫС</span>
+            <h1 class="display-4 fw-bold mb-3">Сақтандыру — бірнеше минутта, онлайн.</h1>
+            <p class="fs-5 text-light mb-4" style="max-width: 600px;">Өтінім беріңіз, құжатты жүктеңіз және статусын жеке кабинеттен бақылаңыз. Толық қауіпсіздік кепілдігі.</p>
+            <div class="d-flex gap-3">
+                <a href="/calculator" class="btn btn-warning text-dark fw-bold px-4 py-2">Авто калькулятор</a>
+                <a href="/check_policy" class="btn btn-outline-light px-4 py-2">Полисті тексеру</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Сақтандыру түрлері (Заманауи карточкалар) -->
+    <h3 class="fw-bold mb-3">Сақтандыру түрлері</h3>
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <a href="/dashboard?type=Автострахование (КАСКО)" class="text-decoration-none">
+                <div class="card h-100 p-4 shadow-sm border-0 bg-white hover-card" style="border-radius: 16px; transition: transform 0.2s;">
+                    <div class="fs-1 mb-3">🚗</div>
+                    <h5 class="fw-bold text-dark">Автосақтандыру</h5>
+                    <p class="text-muted small mb-0">КАСКО және міндетті сақтандыру — көлігіңіз әрдайым қорғауда.</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="/dashboard?type=Мүлікті сақтандыру" class="text-decoration-none">
+                <div class="card h-100 p-4 shadow-sm border-0 bg-white" style="border-radius: 16px;">
+                    <div class="fs-1 mb-3">🏠</div>
+                    <h5 class="fw-bold text-dark">Мүлікті сақтандыру</h5>
+                    <p class="text-muted small mb-0">Пәтер мен үйді өрт, су басу және ұрлықтан қорғаңыз.</p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="/dashboard?type=Туристік сақтандыру" class="text-decoration-none">
+                <div class="card h-100 p-4 shadow-sm border-0 bg-white" style="border-radius: 16px;">
+                    <div class="fs-1 mb-3">✈️</div>
+                    <h5 class="fw-bold text-dark">Туристік сақтандыру</h5>
+                    <p class="text-muted small mb-0">Шетелге сапарда медициналық шығындарды толық жабамыз.</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Негізгі жұмыс панелі -->
+    <div class="row">
+        {% if current_user.role == 'user' %}
+        <div class="col-md-4">
+            <div class="card p-4 shadow-sm border-0 mb-4 bg-white" style="border-radius: 16px;">
+                <h4 class="fw-bold text-success mb-3">Жаңа өтінім беру</h4>
+                <form action="/create_policy" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Сақтандыру түрі</label>
+                        <select name="insurance_type" class="form-select">
+                            <option value="Автострахование (КАСКО)" {% if selected_type == 'Автострахование (КАСКО)' %}selected{% endif %}>Автострахование (КАСКО)</option>
+                            <option value="Мүлікті сақтандыру" {% if selected_type == 'Мүлікті сақтандыру' %}selected{% endif %}>Мүлікті сақтандыру</option>
+                            <option value="Туристік сақтандыру" {% if selected_type == 'Туристік сақтандыру' %}selected{% endif %}>Туристік сақтандыру</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Сақтандыру сомасы (₸)</label>
+                        <input type="number" name="amount" class="form-control" required placeholder="Мысалы: 150000">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Құжат (PDF / JPG)</label>
+                        <input type="file" name="document" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100 py-2 fw-bold">Өтінімді растау</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="{% if current_user.role == 'user' %}col-md-8{% else %}col-md-12{% endif %}">
+            <div class="card p-4 shadow-sm border-0 mb-4 bg-white" style="border-radius: 16px;">
+                <h4 class="fw-bold mb-3">
+                    {% if current_user.role == 'admin' %}🛡️ Әкімші панелі: Барлық өтінімдер
+                    {% elif current_user.role == 'manager' %}📋 Менеджер панелі: Өтінімдерді қарау
+                    {% else %}📂 Менің сақтандыру полистерім мен төлемдерім{% endif %}
+                </h4>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Түрі</th>
+                                <th>Сомасы</th>
+                                <th>Құжат</th>
+                                <th>Төлем</th>
+                                <th>Статусы</th>
+                                <th>Сертификат</th>
+                                {% if current_user.role in ['admin', 'manager'] %}
+                                <th>Басқару</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in policies %}
+                            <tr>
+                                <td><b>#{{ p.id }}</b></td>
+                                <td>{{ p.insurance_type }}</td>
+                                <td><b>{{ p.amount }} ₸</b></td>
+                                <td>
+                                    {% if p.document_path %}
+                                        <a href="/uploads/{{ p.document_path }}" target="_blank" class="btn btn-sm btn-outline-info">📄 Қарау</a>
+                                    {% else %}
+                                        <span class="text-muted small">Жоқ</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if p.payment_status == 'Төленді' %}
+                                       <span class="badge bg-success">Төленді</span>
+                                    {% else %}
+                                       <a href="/payment_gateway/{{ p.id }}" target="_blank" class="btn btn-sm btn-warning fw-bold">💳 Төлеу</a>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge {% if p.status == 'Мақұлданды' %}bg-success{% elif p.status == 'Қабылданбады' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                                        {{ p.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if p.status == 'Мақұлданды' and p.payment_status == 'Төленді' %}
+                                        <a href="/download_certificate/{{ p.id }}" class="btn btn-sm btn-dark">⬇️ PDF</a>
+                                    {% else %}
+                                        <span class="text-muted small">-</span>
+                                    {% endif %}
+                                </td>
+                                {% if current_user.role in ['admin', 'manager'] %}
+                                <td>
+                                    <form action="/update_policy/{{ p.id }}" method="POST" class="d-flex gap-1">
+                                        <select name="status" class="form-select form-select-sm">
+                                            <option value="Қаралуда" {% if p.status == 'Қаралуда' %}selected{% endif %}>Қаралуда</option>
+                                            <option value="Мақұлданды" {% if p.status == 'Мақұлданды' %}selected{% endif %}>Мақұлданды</option>
+                                            <option value="Қабылданбады" {% if p.status == 'Қабылданбады' %}selected{% endif %}>Қабылданбады</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-success">OK</button>
+                                    </form>
+                                </td>
+                                {% endif %}
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center text-muted py-4">Әзірге өтінімдер тізімі бос</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Админ үшін: Аудит логтары және қолданушылар тізімі -->
+            {% if current_user.role == 'admin' %}
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card p-4 shadow-sm border-0 bg-white mb-4" style="border-radius: 16px;">
+                        <h5 class="fw-bold mb-3">👥 Қолданушылар рөлі</h5>
+                        <div class="table-responsive" style="max-height: 250px; overflow-y: auto;">
+                            <table class="table table-sm align-middle">
+                                <thead>
+                                    <tr><th>Аты</th><th>Рөлі</th><th>Өзгерту</th></tr>
+                                </thead>
+                                <tbody>
+                                    {% for u in users %}
+                                    <tr>
+                                        <td>{{ u.full_name }}</td>
+                                        <td><span class="badge bg-secondary">{{ u.role }}</span></td>
+                                        <td>
+                                            <form action="/update_role/{{ u.id }}" method="POST" class="d-flex gap-1">
+                                                <select name="role" class="form-select form-select-sm" style="font-size: 11px;">
+                                                    <option value="user" {% if u.role == 'user' %}selected{% endif %}>User</option>
+                                                    <option value="manager" {% if u.role == 'manager' %}selected{% endif %}>Manager</option>
+                                                    <option value="admin" {% if u.role == 'admin' %}selected{% endif %}>Admin</option>
+                                                </select>
+                                                <button type="submit" class="btn btn-sm btn-primary" style="font-size: 11px;">ОК</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card p-4 shadow-sm border-0 bg-white mb-4" style="border-radius: 16px;">
+                        <h5 class="fw-bold mb-3">🔒 Қауіпсіздік аудит логтары (Audit Logs)</h5>
+                        <div class="table-responsive" style="max-height: 250px; overflow-y: auto;">
+                            <table class="table table-sm small">
+                                <thead class="table-light">
+                                    <tr><th>Уақыты</th><th>Email</th><th>Әрекет</th></tr>
+                                </thead>
+                                <tbody>
+                                    {% for log in audit_logs %}
+                                    <tr>
+                                        <td>{{ log.timestamp.strftime('%H:%M:%S') }}</td>
+                                        <td>{{ log.user_email }}</td>
+                                        <td>{{ log.action }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

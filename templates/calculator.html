@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card p-4 shadow-sm border-0">
+            <h3 class="mb-3 text-success">🚗 Автокөлік құнын және тозуын есептеу калькуляторы</h3>
+            <p class="text-muted">Көлігіңіздің нарықтық құнын және жылдық тозу пайызын автоматты түрде есептеңіз.</p>
+            
+            <form method="POST" class="mt-3">
+                <div class="mb-3">
+                    <label class="form-label">Көліктің бастапқы немесе нарықтық бағасы (₸)</label>
+                    <input type="number" name="car_price" class="form-control" required placeholder="Мысалы: 6000000">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Шыққан жылы</label>
+                    <input type="number" name="car_year" class="form-control" required placeholder="Мысалы: 2018">
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2">Құнын есептеу</button>
+            </form>
+
+            {% if result is not none %}
+            <div class="alert alert-success mt-4 shadow-sm">
+                <h5 class="fw-bold">Есептеу нәтижесі:</h5>
+                <hr>
+                <p class="mb-1">Көліктің тозуы ескерілген нақты бағасы:</p>
+                <h3 class="text-dark fw-bold">{{ result }} ₸</h3>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
